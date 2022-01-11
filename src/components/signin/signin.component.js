@@ -3,7 +3,9 @@ import React from "react";
 import "./signin.styles.scss";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
-import {googleAuth} from "../../firebase/firebase.utils";
+import {googleAuth, firebaseAuth} from "../../firebase/firebase.utils";
+import {signInWithEmailAndPassword} from "firebase/auth"
+
 
 
 export default class SignIn extends React.Component {
@@ -17,9 +19,21 @@ export default class SignIn extends React.Component {
         }
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         event.preventDefault();
-        this.setState({email: '', password: ''})
+
+        const {email, password} = this.state;
+
+        try{
+            await signInWithEmailAndPassword(firebaseAuth, email, password);
+            this.setState({email: '', password: ''})
+
+        } catch (e) {
+            console.log("Error in sign in with u-p:", e);
+        }
+
+
+
     }
 
     handleChange = (event) => {
@@ -34,7 +48,7 @@ export default class SignIn extends React.Component {
                 <h2>J'ai deja un compte</h2>
                 <span>Sign in with your email and password</span>
 
-                <form>
+                <form onSubmit={this.handleSubmit} >
                     <FormInput
                         name={"email"}
                         type={"email"}
